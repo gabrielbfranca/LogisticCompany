@@ -2,6 +2,8 @@ package main.java.com.solvd.logistic.company;
 
 import main.java.com.solvd.logistic.company.enums.ResourceType;
 import main.java.com.solvd.logistic.company.generics.EntityRegistry;
+import main.java.com.solvd.logistic.company.generics.Loader;
+import main.java.com.solvd.logistic.company.generics.OperationLogs;
 import main.java.com.solvd.logistic.company.interfaces.IRouteTime;
 import main.java.com.solvd.logistic.company.resources.human.Driver;
 import main.java.com.solvd.logistic.company.exceptions.InvalidCoordinatesException;
@@ -27,7 +29,7 @@ import java.util.*;
 
 public class LogisticCompany {
     static {
-        System.setProperty("log4j.configurationFile", "resources/log4j2.xml");
+        System.setProperty("log4j.configurationFile", "main/resources/log4j2.xml");
     }
     public static final Logger logger = LogManager.getLogger(LogisticCompany.class);
     public static void main(String[] args) throws InvalidCoordinatesException, InvalidFuelException, InvalidSpaceException {
@@ -52,25 +54,31 @@ public class LogisticCompany {
         Client pharmaCorp = new Client("Drogaria pacheco", "drogaria@gmail.com");
         clients.add(pharmaCorp);
 
-        Set<Automobile> transports = new HashSet<>();
-        RefrigeratorTruck truck = new RefrigeratorTruck("dho-1234",500,20, 18, 800);
-        transports.add(truck);
+        EntityRegistry<RefrigeratorTruck> fleet = new EntityRegistry<>();
+        fleet.register(new RefrigeratorTruck("DHO-1234", 500, 20, 18, 800));
+        fleet.register(new RefrigeratorTruck("ABC-123", 1000, 20, -20, 800));
 
-        EntityRegistry<RefrigeratorTruck> transportRegistry = new EntityRegistry<>();
-        transportRegistry.register(truck);
+        RefrigeratorTruck truck = fleet.getTransports().stream().findFirst().orElse(null);
 
         Route rotaBR102 = new Route(saoPaulo, rioJaneiro, 200);
         Warehouse centroSP = new Warehouse("Centro São Paulo", 10);
 
-        Queue<Resource> Cargo = new PriorityQueue<>();
+        Queue<Resource> Cargo = new ArrayDeque<>();
         Resource medicalSupplies = new Resource(ResourceType.FRAGILE, 200);
         Cargo.add(medicalSupplies);
 
+        Loader<Resource> resourceLoader = new Loader<>();
+        Loader<RefrigeratorTruck> truckLoader = new Loader<>();
+
+        resourceLoader.load(medicalSupplies, centroSP);
+        truckLoader.load(truck, centroSP);
 
         logger.info("GPS: {}", truck.getCurrentLocation());
         try {
+            logger.info("GPS: {} with {} license plate", truck.getCurrentLocation(), truck.getLicensePlate());
             truck.updateCoordinates(91,100);
         } catch(Exception e) {
+            logger.error(new OperationLogs<>(e.getMessage(), "GPS_FAILURE"));
             logger.error(e.getMessage());
         } finally { // reupdate unconditionally with a valid coordinate
             truck.updateCoordinates(-23.5505, -46.6333);
@@ -80,6 +88,7 @@ public class LogisticCompany {
         try {
             truck.loadCapacity(1000);
         } catch(Exception e) {
+            logger.error(new OperationLogs<>(e.getMessage(), "SPACE_ERROR"));
             logger.error(e.getMessage());
         } finally { // reupdate unconditionally with a valid coordinate
             truck.loadCapacity(300);
@@ -92,6 +101,7 @@ public class LogisticCompany {
         try {
             truck.refill(10000);
         } catch(Exception e) {
+            logger.error(new OperationLogs<>(e.getMessage(), "FUEL_ERROR"));
             logger.error(e.getMessage());
         } finally { // reupdate unconditionally with a valid fuel
             truck.refill(100.0);
@@ -103,9 +113,10 @@ public class LogisticCompany {
         truck.avgVelocity = 80.0f;
         truck.setTimeStrategy(strategyMap.get("HIGHWAY"));
         logger.info("On highway: {} hours", truck.calculateRouteTime(200.0f));
-
+        logger.info(new OperationLogs<>(truck, "HIGHWAY_ETA"));
         truck.setTimeStrategy(strategyMap.get("RAINY"));
         logger.warn("Rainy condition detected! Adjusted time: {} hours", truck.calculateRouteTime(200.0f));
+        logger.warn(new OperationLogs<>(truck, "WEATHER_ADJUSTED_ETA"));
 
         Trip activeTrip = new Trip("TRIP-001", truck, joao, rotaBR102);
         Billing tripBilling = new Billing(4500.50, "USD");
@@ -116,9 +127,13 @@ public class LogisticCompany {
         logger.info("Vehicle Plate: {}", activeTrip.vehicle.getLicensePlate());
         logger.debug("Warehouse Location: {}", centroSP.location);
         logger.debug("Client Name: {}", pharmaCorp.companyName);
-        logger.info("Destination: {}", activeTrip.route.endPoint.getCityName());
+        logger.info("Route: From {} to {}", path.getFirst().getCityName(), path.getLast().getCityName());
         logger.info("Billing Amount: {}{}", tripBilling.amount, tripBilling.currency);
         logger.info("Required Temperature: {}°C", truck.getMinTemperature());
+        logger.info("Vehicle Status: Plate {}, Fuel {}L, Temp {}°C",
+                truck.getLicensePlate(),
+                truck.getFuelLevel(),
+                truck.getMinTemperature());
 
         // equals compare license plates since it's an ID.
         Automobile v2 = new RefrigeratorTruck("ABC-123", 1000, 20, -20, 800);
