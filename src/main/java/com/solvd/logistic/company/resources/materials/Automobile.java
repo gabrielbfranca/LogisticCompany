@@ -1,5 +1,6 @@
 package main.java.com.solvd.logistic.company.resources.materials;
 
+import com.solvd.logistic.company.enums.VehicleType;
 import main.java.com.solvd.logistic.company.interfaces.IFuel;
 import main.java.com.solvd.logistic.company.interfaces.IGPS;
 
@@ -8,10 +9,11 @@ public abstract class Automobile implements IGPS, IFuel {
     public double fuel;
     public float avgVelocity;
     public double lat,lon;
+    private VehicleType vehicleType;
 
-
-    public Automobile(String licensePlate) {
+    public Automobile(String licensePlate, VehicleType vehicleType) {
         this.licensePlate = licensePlate;
+        this.vehicleType = vehicleType;
     }
 
     public String getLicensePlate() {

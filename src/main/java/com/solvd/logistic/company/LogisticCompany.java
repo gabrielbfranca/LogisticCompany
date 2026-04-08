@@ -1,5 +1,8 @@
 package main.java.com.solvd.logistic.company;
 
+import com.solvd.logistic.company.enums.ShipmentStatus;
+import com.solvd.logistic.company.enums.VehicleType;
+import com.solvd.logistic.company.utils.CountWords;
 import main.java.com.solvd.logistic.company.enums.ResourceType;
 import main.java.com.solvd.logistic.company.generics.EntityRegistry;
 import main.java.com.solvd.logistic.company.generics.Loader;
@@ -55,8 +58,8 @@ public class LogisticCompany {
         clients.add(pharmaCorp);
 
         EntityRegistry<RefrigeratorTruck> fleet = new EntityRegistry<>();
-        fleet.register(new RefrigeratorTruck("DHO-1234", 500, 20, 18, 800));
-        fleet.register(new RefrigeratorTruck("ABC-123", 1000, 20, -20, 800));
+        fleet.register(new RefrigeratorTruck("DHO-1234", 500, 20, 18, 800, VehicleType.TRUCK));
+        fleet.register(new RefrigeratorTruck("ABC-123", 1000, 20, -20, 800, VehicleType.TRUCK));
 
         RefrigeratorTruck truck = fleet.getTransports().stream().findFirst().orElse(null);
 
@@ -78,7 +81,7 @@ public class LogisticCompany {
             logger.info("GPS: {} with {} license plate", truck.getCurrentLocation(), truck.getLicensePlate());
             truck.updateCoordinates(91,100);
         } catch(Exception e) {
-            logger.error(new OperationLogs<>(e.getMessage(), "GPS_FAILURE"));
+            logger.error(new OperationLogs<>(e.getMessage(), "GPS_FAILURE", ShipmentStatus.PENDING));
             logger.error(e.getMessage());
         } finally { // reupdate unconditionally with a valid coordinate
             truck.updateCoordinates(-23.5505, -46.6333);
@@ -88,7 +91,7 @@ public class LogisticCompany {
         try {
             truck.loadCapacity(1000);
         } catch(Exception e) {
-            logger.error(new OperationLogs<>(e.getMessage(), "SPACE_ERROR"));
+            logger.error(new OperationLogs<>(e.getMessage(), "SPACE_ERROR",ShipmentStatus.PENDING));
             logger.error(e.getMessage());
         } finally { // reupdate unconditionally with a valid coordinate
             truck.loadCapacity(300);
@@ -101,7 +104,7 @@ public class LogisticCompany {
         try {
             truck.refill(10000);
         } catch(Exception e) {
-            logger.error(new OperationLogs<>(e.getMessage(), "FUEL_ERROR"));
+            logger.error(new OperationLogs<>(e.getMessage(), "FUEL_ERROR", ShipmentStatus.PENDING));
             logger.error(e.getMessage());
         } finally { // reupdate unconditionally with a valid fuel
             truck.refill(100.0);
@@ -113,10 +116,10 @@ public class LogisticCompany {
         truck.avgVelocity = 80.0f;
         truck.setTimeStrategy(strategyMap.get("HIGHWAY"));
         logger.info("On highway: {} hours", truck.calculateRouteTime(200.0f));
-        logger.info(new OperationLogs<>(truck, "HIGHWAY_ETA"));
+        logger.info(new OperationLogs<>(truck, "HIGHWAY_ETA", ShipmentStatus.IN_TRANSIT));
         truck.setTimeStrategy(strategyMap.get("RAINY"));
         logger.warn("Rainy condition detected! Adjusted time: {} hours", truck.calculateRouteTime(200.0f));
-        logger.warn(new OperationLogs<>(truck, "WEATHER_ADJUSTED_ETA"));
+        logger.warn(new OperationLogs<>(truck, "WEATHER_ADJUSTED_ETA", ShipmentStatus.IN_TRANSIT));
 
         Trip activeTrip = new Trip("TRIP-001", truck, joao, rotaBR102);
         Billing tripBilling = new Billing(4500.50, "USD");
@@ -136,11 +139,15 @@ public class LogisticCompany {
                 truck.getMinTemperature());
 
         // equals compare license plates since it's an ID.
-        Automobile v2 = new RefrigeratorTruck("ABC-123", 1000, 20, -20, 800);
+        Automobile v2 = new RefrigeratorTruck("ABC-123", 1000, 20, -20, 800, VehicleType.TRUCK);
         logger.debug("Comparing current truck with v2. Are vehicles same? {}", truck.equals(v2));
 
-        Automobile v3 = new RefrigeratorTruck("ABC-123", 1000, 20, -20, 800);
+        Automobile v3 = new RefrigeratorTruck("ABC-123", 1000, 20, -20, 800, VehicleType.TRUCK);
         logger.debug("Comparing v3 with v2. Are vehicles same? {}", v3.equals(v2));
-
+        try {
+            logger.info("There are {} special characters in the article", CountWords.countSpecialCharacters("src/main/resources/article.txt"));
+        } catch(Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 }
