@@ -1,5 +1,6 @@
 package main.java.com.solvd.logistic.company.resources.materials;
 
+import com.solvd.logistic.company.enums.VehicleType;
 import main.java.com.solvd.logistic.company.exceptions.InvalidCoordinatesException;
 import main.java.com.solvd.logistic.company.exceptions.InvalidFuelException;
 import main.java.com.solvd.logistic.company.exceptions.InvalidSpaceException;
@@ -23,8 +24,8 @@ public class Truck extends Automobile implements IStorage {
         this.timeStrategy = strategy;
     }
 
-    public Truck(String licensePlate, double fuelCapacity, double maxPayload) {
-        super(licensePlate);
+    public Truck(String licensePlate, double fuelCapacity, double maxPayload, VehicleType vehicleType) {
+        super(licensePlate, vehicleType);
         this.fuelCapacity = fuelCapacity;
         this.maxPayload = maxPayload;
     }

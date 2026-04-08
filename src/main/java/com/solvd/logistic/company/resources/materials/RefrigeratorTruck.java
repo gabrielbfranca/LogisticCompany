@@ -1,5 +1,6 @@
 package main.java.com.solvd.logistic.company.resources.materials;
 
+import com.solvd.logistic.company.enums.VehicleType;
 import main.java.com.solvd.logistic.company.interfaces.ITemperatureController;
 
 import java.util.Objects;
@@ -12,8 +13,9 @@ public class RefrigeratorTruck extends Truck implements ITemperatureController {
                              double fuelCapacity,
                              double temperature,
                              double minTemperature,
-                             double maxPayload) {
-        super(licensePlate, fuelCapacity, maxPayload);
+                             double maxPayload,
+                             VehicleType vehicleType) {
+        super(licensePlate, fuelCapacity, maxPayload, vehicleType);
         this.minTemperature = minTemperature;
         this.temperature = temperature;
     }
