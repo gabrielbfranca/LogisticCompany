@@ -1,7 +1,7 @@
-package main.java.com.solvd.logistic.company.generics;
+package com.solvd.logistic.company.generics;
 
-import main.java.com.solvd.logistic.company.LogisticCompany;
-import main.java.com.solvd.logistic.company.resources.materials.Automobile;
+
+import com.solvd.logistic.company.resources.materials.Automobile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

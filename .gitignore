@@ -24,6 +24,7 @@ target/
 
 ### VS Code ###
 .vscode/
-
+LogisticCompany.iml
+.idea/*
 ### Mac OS ###
 .DS_Store

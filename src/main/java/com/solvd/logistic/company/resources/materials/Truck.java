@@ -1,11 +1,11 @@
-package main.java.com.solvd.logistic.company.resources.materials;
+package com.solvd.logistic.company.resources.materials;
 
 import com.solvd.logistic.company.enums.VehicleType;
-import main.java.com.solvd.logistic.company.exceptions.InvalidCoordinatesException;
-import main.java.com.solvd.logistic.company.exceptions.InvalidFuelException;
-import main.java.com.solvd.logistic.company.exceptions.InvalidSpaceException;
-import main.java.com.solvd.logistic.company.interfaces.IRouteTime;
-import main.java.com.solvd.logistic.company.interfaces.IStorage;
+import com.solvd.logistic.company.exceptions.InvalidCoordinatesException;
+import com.solvd.logistic.company.exceptions.InvalidFuelException;
+import com.solvd.logistic.company.exceptions.InvalidSpaceException;
+import com.solvd.logistic.company.interfaces.IRouteTime;
+import com.solvd.logistic.company.interfaces.IStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -1,4 +1,4 @@
-package main.java.com.solvd.logistic.company.operation;
+package com.solvd.logistic.company.operation;
 
 public class Client {
     public String companyName;

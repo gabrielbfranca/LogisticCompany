@@ -1,4 +1,4 @@
-package main.java.com.solvd.logistic.company.enums;
+package com.solvd.logistic.company.enums;
 
 public enum ResourceType {
     HAZARD,

@@ -1,4 +1,4 @@
-package main.java.com.solvd.logistic.company.interfaces;
+package com.solvd.logistic.company.interfaces;
 
 public interface IRouteTime {
 

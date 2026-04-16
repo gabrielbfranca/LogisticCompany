@@ -1,8 +1,8 @@
-package main.java.com.solvd.logistic.company.operation;
+package com.solvd.logistic.company.operation;
 
-import main.java.com.solvd.logistic.company.resources.human.Driver;
-import main.java.com.solvd.logistic.company.infraestructure.Route;
-import main.java.com.solvd.logistic.company.resources.materials.Truck;
+import com.solvd.logistic.company.resources.human.Driver;
+import com.solvd.logistic.company.infraestructure.Route;
+import com.solvd.logistic.company.resources.materials.Truck;
 
 public class Trip {
     private String tripId;

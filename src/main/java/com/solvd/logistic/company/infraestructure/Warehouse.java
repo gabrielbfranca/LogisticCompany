@@ -1,9 +1,9 @@
-package main.java.com.solvd.logistic.company.infraestructure;
+package com.solvd.logistic.company.infraestructure;
 
-import main.java.com.solvd.logistic.company.exceptions.InvalidCoordinatesException;
-import main.java.com.solvd.logistic.company.exceptions.InvalidSpaceException;
-import main.java.com.solvd.logistic.company.interfaces.IGPS;
-import main.java.com.solvd.logistic.company.interfaces.IStorage;
+import com.solvd.logistic.company.exceptions.InvalidCoordinatesException;
+import com.solvd.logistic.company.exceptions.InvalidSpaceException;
+import com.solvd.logistic.company.interfaces.IGPS;
+import com.solvd.logistic.company.interfaces.IStorage;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package main.java.com.solvd.logistic.company.resources.materials;
+package com.solvd.logistic.company.resources.materials;
 
-import main.java.com.solvd.logistic.company.enums.ResourceType;
+import com.solvd.logistic.company.enums.ResourceType;
 
 public class Resource {
     private ResourceType type;

@@ -1,6 +1,6 @@
-package main.java.com.solvd.logistic.company.generics;
+package com.solvd.logistic.company.generics;
 
-import main.java.com.solvd.logistic.company.infraestructure.Warehouse;
+import com.solvd.logistic.company.infraestructure.Warehouse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
