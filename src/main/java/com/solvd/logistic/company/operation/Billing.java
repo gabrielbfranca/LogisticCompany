@@ -1,4 +1,4 @@
-package main.java.com.solvd.logistic.company.operation;
+package com.solvd.logistic.company.operation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

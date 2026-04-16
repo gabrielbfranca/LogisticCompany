@@ -1,8 +1,8 @@
-package main.java.com.solvd.logistic.company.resources.materials;
+package com.solvd.logistic.company.resources.materials;
 
 import com.solvd.logistic.company.enums.VehicleType;
-import main.java.com.solvd.logistic.company.interfaces.IFuel;
-import main.java.com.solvd.logistic.company.interfaces.IGPS;
+import com.solvd.logistic.company.interfaces.IFuel;
+import com.solvd.logistic.company.interfaces.IGPS;
 
 public abstract class Automobile implements IGPS, IFuel {
     private String licensePlate;

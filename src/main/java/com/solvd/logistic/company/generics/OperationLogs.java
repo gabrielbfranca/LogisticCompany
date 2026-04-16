@@ -1,4 +1,4 @@
-package main.java.com.solvd.logistic.company.generics;
+package com.solvd.logistic.company.generics;
 
 import com.solvd.logistic.company.enums.ShipmentStatus;
 

@@ -1,6 +1,6 @@
-package main.java.com.solvd.logistic.company.interfaces;
+package com.solvd.logistic.company.interfaces;
 
-import main.java.com.solvd.logistic.company.exceptions.InvalidSpaceException;
+import com.solvd.logistic.company.exceptions.InvalidSpaceException;
 
 public interface IStorage {
     public double getAvailableCapacity();

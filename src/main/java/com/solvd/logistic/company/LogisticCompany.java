@@ -1,38 +1,43 @@
-package main.java.com.solvd.logistic.company;
+package com.solvd.logistic.company;
 
 import com.solvd.logistic.company.enums.ShipmentStatus;
 import com.solvd.logistic.company.enums.VehicleType;
+import com.solvd.logistic.company.interfaces.CapacityEvaluator;
+import com.solvd.logistic.company.interfaces.FuelConsumptionEstimator;
+import com.solvd.logistic.company.interfaces.RouteLabelFormatter;
 import com.solvd.logistic.company.utils.CountWords;
-import main.java.com.solvd.logistic.company.enums.ResourceType;
-import main.java.com.solvd.logistic.company.generics.EntityRegistry;
-import main.java.com.solvd.logistic.company.generics.Loader;
-import main.java.com.solvd.logistic.company.generics.OperationLogs;
-import main.java.com.solvd.logistic.company.interfaces.IRouteTime;
-import main.java.com.solvd.logistic.company.resources.human.Driver;
-import main.java.com.solvd.logistic.company.exceptions.InvalidCoordinatesException;
-import main.java.com.solvd.logistic.company.exceptions.InvalidFuelException;
-import main.java.com.solvd.logistic.company.exceptions.InvalidSpaceException;
-import main.java.com.solvd.logistic.company.infraestructure.Location;
-import main.java.com.solvd.logistic.company.infraestructure.Route;
-import main.java.com.solvd.logistic.company.infraestructure.Warehouse;
+import com.solvd.logistic.company.enums.ResourceType;
+import com.solvd.logistic.company.generics.EntityRegistry;
+import com.solvd.logistic.company.generics.Loader;
+import com.solvd.logistic.company.generics.OperationLogs;
+import com.solvd.logistic.company.interfaces.IRouteTime;
+import com.solvd.logistic.company.resources.human.Driver;
+import com.solvd.logistic.company.exceptions.InvalidCoordinatesException;
+import com.solvd.logistic.company.exceptions.InvalidFuelException;
+import com.solvd.logistic.company.exceptions.InvalidSpaceException;
+import com.solvd.logistic.company.infraestructure.Location;
+import com.solvd.logistic.company.infraestructure.Route;
+import com.solvd.logistic.company.infraestructure.Warehouse;
 
-import main.java.com.solvd.logistic.company.operation.Billing;
-import main.java.com.solvd.logistic.company.operation.Client;
-import main.java.com.solvd.logistic.company.operation.Trip;
-import main.java.com.solvd.logistic.company.resources.materials.Automobile;
-import main.java.com.solvd.logistic.company.resources.materials.RefrigeratorTruck;
-import main.java.com.solvd.logistic.company.resources.materials.Resource;
-import main.java.com.solvd.logistic.company.strategies.RainyStrategy;
-import main.java.com.solvd.logistic.company.strategies.TwoWayHighwayStrategy;
+import com.solvd.logistic.company.operation.Billing;
+import com.solvd.logistic.company.operation.Client;
+import com.solvd.logistic.company.operation.Trip;
+import com.solvd.logistic.company.resources.materials.Automobile;
+import com.solvd.logistic.company.resources.materials.RefrigeratorTruck;
+import com.solvd.logistic.company.resources.materials.Resource;
+import com.solvd.logistic.company.strategies.RainyStrategy;
+import com.solvd.logistic.company.strategies.TwoWayHighwayStrategy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class LogisticCompany {
     static {
-        System.setProperty("log4j.configurationFile", "main/resources/log4j2.xml");
+        System.setProperty("log4j.configurationFile", "classpath:log4j2.xml");
     }
     public static final Logger logger = LogManager.getLogger(LogisticCompany.class);
     public static void main(String[] args) throws InvalidCoordinatesException, InvalidFuelException, InvalidSpaceException {
@@ -41,9 +46,8 @@ public class LogisticCompany {
         Location saoPaulo = new Location("São Paulo","SP","vila mariana");
         Location rioJaneiro = new Location("Rio de Janeiro","RJ","copacana");
 
-        LinkedList<Location> path = new LinkedList<>();
-        path.add(saoPaulo);
-        path.add(rioJaneiro);
+        LinkedList<Location> path = Stream.of(saoPaulo, rioJaneiro)
+                .collect(Collectors.toCollection(LinkedList::new));
 
         Map<String, IRouteTime> strategyMap = new HashMap<>();
         strategyMap.put("HIGHWAY", new TwoWayHighwayStrategy());
@@ -144,8 +148,32 @@ public class LogisticCompany {
 
         Automobile v3 = new RefrigeratorTruck("ABC-123", 1000, 20, -20, 800, VehicleType.TRUCK);
         logger.debug("Comparing v3 with v2. Are vehicles same? {}", v3.equals(v2));
+
+        // functional interface and stream tasks:
+        RouteLabelFormatter routeLabelFormatter = (origin, destination) -> origin + " -> " + destination;
+        FuelConsumptionEstimator fuelConsumptionEstimator = (distanceKm, litersPer100Km) ->
+                (distanceKm / 100.0) * litersPer100Km;
+        CapacityEvaluator capacityEvaluator = (currentLoad, incomingLoad, maxCapacity) ->
+                currentLoad + incomingLoad <= maxCapacity;
+
+        logger.info("Route Label: {}",
+                routeLabelFormatter.format(path.getFirst().getCityName(), path.getLast().getCityName()));
+        logger.info("Estimated fuel usage for route: {}L",
+                fuelConsumptionEstimator.estimate(rotaBR102.totalDistance, 32));
+        logger.info("Can load additional cargo? {}",
+                capacityEvaluator.canLoad(truck.capacity, medicalSupplies.getWeight(), truck.getMaxPayload()));
+
+        Scanner scanner = new Scanner(System.in);
+        logger.info("write the special words separated by spaces:");
+        String input = scanner.nextLine();
+
+        List<String> words = Arrays.asList(input.split(" "));
+
         try {
-            logger.info("There are {} special characters in the article", CountWords.countSpecialCharacters("src/main/resources/article.txt"));
+            CountWords.toFile("src/main/resources/results.txt",
+                    CountWords.countSpecialCharacters("src/main/resources/article.txt", words)
+            );
+            logger.info("file successfully written");
         } catch(Exception e) {
             logger.error(e.getMessage());
         }

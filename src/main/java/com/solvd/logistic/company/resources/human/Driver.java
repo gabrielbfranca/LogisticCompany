@@ -1,4 +1,4 @@
-package main.java.com.solvd.logistic.company.resources.human;
+package com.solvd.logistic.company.resources.human;
 
 import java.util.List;
 

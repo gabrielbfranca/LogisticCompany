@@ -1,4 +1,4 @@
-package main.java.com.solvd.logistic.company.operation;
+package com.solvd.logistic.company.operation;
 
 public abstract class Document {
     public abstract void generate();

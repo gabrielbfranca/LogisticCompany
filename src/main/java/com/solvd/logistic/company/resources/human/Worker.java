@@ -1,6 +1,6 @@
-package main.java.com.solvd.logistic.company.resources.human;
+package com.solvd.logistic.company.resources.human;
 
-import main.java.com.solvd.logistic.company.interfaces.IGPS;
+import com.solvd.logistic.company.interfaces.IGPS;
 
 public abstract class Worker implements IGPS {
     private String name;

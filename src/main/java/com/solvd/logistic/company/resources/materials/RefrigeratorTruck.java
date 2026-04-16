@@ -1,7 +1,7 @@
-package main.java.com.solvd.logistic.company.resources.materials;
+package com.solvd.logistic.company.resources.materials;
 
 import com.solvd.logistic.company.enums.VehicleType;
-import main.java.com.solvd.logistic.company.interfaces.ITemperatureController;
+import com.solvd.logistic.company.interfaces.ITemperatureController;
 
 import java.util.Objects;
 

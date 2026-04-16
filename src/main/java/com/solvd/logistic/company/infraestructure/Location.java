@@ -1,4 +1,4 @@
-package main.java.com.solvd.logistic.company.infraestructure;
+package com.solvd.logistic.company.infraestructure;
 
 public class Location {
     private String cityName;

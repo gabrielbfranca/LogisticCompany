@@ -1,6 +1,6 @@
-package main.java.com.solvd.logistic.company.strategies;
+package com.solvd.logistic.company.strategies;
 
-import main.java.com.solvd.logistic.company.interfaces.IRouteTime;
+import com.solvd.logistic.company.interfaces.IRouteTime;
 
 public class RainyStrategy implements IRouteTime {
 
