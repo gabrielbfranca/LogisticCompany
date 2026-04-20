@@ -1,5 +1,6 @@
 package com.solvd.logistic.company.infraestructure;
 
+import com.solvd.logistic.company.annotations.AuditAction;
 import com.solvd.logistic.company.exceptions.InvalidCoordinatesException;
 import com.solvd.logistic.company.exceptions.InvalidSpaceException;
 import com.solvd.logistic.company.interfaces.IGPS;
@@ -29,7 +30,7 @@ public class Warehouse implements IStorage, IGPS {
 
         return weight <= (capacity - maxCapacity);
     }
-
+    @AuditAction(value= "Warehouse load", level= "INFO")
     @Override
     public void loadCapacity(double capacity) throws InvalidSpaceException {
         if (hasSpace(capacity)) {

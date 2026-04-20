@@ -1,13 +1,8 @@
 package com.solvd.logistic.company.operation;
 
-public class Client {
-    public String companyName;
-    public String contactEmail;
+import com.solvd.logistic.company.annotations.Sensitive;
 
-    public Client(String companyName, String contactEmail) {
-        this.companyName = companyName;
-        this.contactEmail = contactEmail;
+public record Client(@Sensitive String companyName, String contactEmail) {
+
     }
 
-
-}
