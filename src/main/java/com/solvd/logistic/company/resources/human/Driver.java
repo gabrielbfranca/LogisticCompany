@@ -1,8 +1,11 @@
 package com.solvd.logistic.company.resources.human;
 
+import com.solvd.logistic.company.annotations.Sensitive;
+
 import java.util.List;
 
 public class Driver extends Worker {
+    @Sensitive
     private String email;
 
     public Driver(String name, String email) {

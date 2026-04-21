@@ -1,5 +1,6 @@
 package com.solvd.logistic.company.resources.materials;
 
+import com.solvd.logistic.company.annotations.AuditAction;
 import com.solvd.logistic.company.enums.VehicleType;
 import com.solvd.logistic.company.interfaces.ITemperatureController;
 
@@ -40,7 +41,7 @@ public class RefrigeratorTruck extends Truck implements ITemperatureController {
     public double getCurrentTemperature() {
         return temperature;
     }
-
+    @AuditAction(value = "Refrigerator temp update", level = "INFO")
     @Override
     public void setTargetTemperature(double temp) {
         this.minTemperature = temp;

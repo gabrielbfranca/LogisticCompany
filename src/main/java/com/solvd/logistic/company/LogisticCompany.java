@@ -1,5 +1,6 @@
 package com.solvd.logistic.company;
 
+import com.solvd.logistic.company.annotations.AuditAction;
 import com.solvd.logistic.company.enums.ShipmentStatus;
 import com.solvd.logistic.company.enums.VehicleType;
 import com.solvd.logistic.company.interfaces.CapacityEvaluator;
@@ -27,6 +28,7 @@ import com.solvd.logistic.company.resources.materials.RefrigeratorTruck;
 import com.solvd.logistic.company.resources.materials.Resource;
 import com.solvd.logistic.company.strategies.RainyStrategy;
 import com.solvd.logistic.company.strategies.TwoWayHighwayStrategy;
+import com.solvd.logistic.company.utils.Inspector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,7 +36,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
+@AuditAction(value="Main execution", level="INFO")
 public class LogisticCompany {
     static {
         System.setProperty("log4j.configurationFile", "classpath:log4j2.xml");
@@ -56,7 +58,8 @@ public class LogisticCompany {
         List<Driver> driverSet = new ArrayList<>();
         Driver joao = new Driver("Gabriel", "gabrielbfranca@gmail.com");
         driverSet.add(joao);
-
+        Inspector.FieldReport report = Inspector.inspect(joao);
+        logger.info("Inspection report: {}", report);
         Set<Client> clients = new HashSet<>();
         Client pharmaCorp = new Client("Drogaria pacheco", "drogaria@gmail.com");
         clients.add(pharmaCorp);
@@ -66,10 +69,12 @@ public class LogisticCompany {
         fleet.register(new RefrigeratorTruck("ABC-123", 1000, 20, -20, 800, VehicleType.TRUCK));
 
         RefrigeratorTruck truck = fleet.getTransports().stream().findFirst().orElse(null);
+        assert truck != null;
+        Inspector.audit(truck);
 
         Route rotaBR102 = new Route(saoPaulo, rioJaneiro, 200);
         Warehouse centroSP = new Warehouse("Centro São Paulo", 10);
-
+        Inspector.audit(centroSP);
         Queue<Resource> Cargo = new ArrayDeque<>();
         Resource medicalSupplies = new Resource(ResourceType.FRAGILE, 200);
         Cargo.add(medicalSupplies);
@@ -129,12 +134,12 @@ public class LogisticCompany {
         Billing tripBilling = new Billing(4500.50, "USD");
 
         logger.info("Cargo info: {}", medicalSupplies);
-        logger.info("Trip ID: {}", activeTrip.getTripId());
-        logger.info("Driver: {}", activeTrip.driver.getName());
-        logger.info("Vehicle Plate: {}", activeTrip.vehicle.getLicensePlate());
+        logger.info("Trip ID: {}", activeTrip.tripId());
+        logger.info("Driver: {}", activeTrip.driver().getName());
+        logger.info("Vehicle Plate: {}", activeTrip.vehicle().getLicensePlate());
         logger.debug("Warehouse Location: {}", centroSP.location);
-        logger.debug("Client Name: {}", pharmaCorp.companyName);
-        logger.info("Route: From {} to {}", path.getFirst().getCityName(), path.getLast().getCityName());
+        logger.debug("Client Name: {}", pharmaCorp.companyName());
+        logger.info("Route: From {} to {}", path.getFirst().cityName(), path.getLast().cityName());
         logger.info("Billing Amount: {}{}", tripBilling.amount, tripBilling.currency);
         logger.info("Required Temperature: {}°C", truck.getMinTemperature());
         logger.info("Vehicle Status: Plate {}, Fuel {}L, Temp {}°C",
@@ -157,7 +162,7 @@ public class LogisticCompany {
                 currentLoad + incomingLoad <= maxCapacity;
 
         logger.info("Route Label: {}",
-                routeLabelFormatter.format(path.getFirst().getCityName(), path.getLast().getCityName()));
+                routeLabelFormatter.format(path.getFirst().cityName(), path.getLast().cityName()));
         logger.info("Estimated fuel usage for route: {}L",
                 fuelConsumptionEstimator.estimate(rotaBR102.totalDistance, 32));
         logger.info("Can load additional cargo? {}",

@@ -1,5 +1,6 @@
 package com.solvd.logistic.company.resources.materials;
 
+
 import com.solvd.logistic.company.enums.VehicleType;
 import com.solvd.logistic.company.exceptions.InvalidCoordinatesException;
 import com.solvd.logistic.company.exceptions.InvalidFuelException;
@@ -42,6 +43,7 @@ public class Truck extends Automobile implements IStorage {
     public double getFuelLevel() {
         return this.fuel;
     }
+
 
     @Override
     public void refill(double amount) throws InvalidFuelException {
