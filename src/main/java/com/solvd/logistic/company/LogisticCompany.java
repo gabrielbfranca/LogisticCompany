@@ -6,7 +6,7 @@ import com.solvd.logistic.company.enums.VehicleType;
 import com.solvd.logistic.company.interfaces.CapacityEvaluator;
 import com.solvd.logistic.company.interfaces.FuelConsumptionEstimator;
 import com.solvd.logistic.company.interfaces.RouteLabelFormatter;
-import com.solvd.logistic.company.utils.CountWords;
+import com.solvd.logistic.company.utils.*;
 import com.solvd.logistic.company.enums.ResourceType;
 import com.solvd.logistic.company.generics.EntityRegistry;
 import com.solvd.logistic.company.generics.Loader;
@@ -28,13 +28,19 @@ import com.solvd.logistic.company.resources.materials.RefrigeratorTruck;
 import com.solvd.logistic.company.resources.materials.Resource;
 import com.solvd.logistic.company.strategies.RainyStrategy;
 import com.solvd.logistic.company.strategies.TwoWayHighwayStrategy;
-import com.solvd.logistic.company.utils.Inspector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static org.apache.commons.lang3.ArrayUtils.toArray;
 
 @AuditAction(value="Main execution", level="INFO")
 public class LogisticCompany {
@@ -168,6 +174,69 @@ public class LogisticCompany {
         logger.info("Can load additional cargo? {}",
                 capacityEvaluator.canLoad(truck.capacity, medicalSupplies.getWeight(), truck.getMaxPayload()));
 
+        // running thread homework
+        new Threading().start();
+        new Thread(new ThreadingWithinterface()).start();
+        ConnectionPool pool = ConnectionPool.getInstance();
+        ExecutorService workers = Executors.newFixedThreadPool(7);
+        Runnable task = () -> {
+            try {
+                String name = Thread.currentThread().getName();
+                logger.info(name);
+                MockConnection mc = pool.acquire();
+                logger.info(name + "is with" + mc);
+                Thread.sleep(2_000);
+                pool.release(mc);
+                logger.info(name + " released " + mc);
+            } catch ( InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        };
+
+        for (int i = 0; i < 5; i++) workers.submit(task);
+
+        workers.shutdown();
+        try {
+            workers.awaitTermination(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            logger.info("got this error {}", e.getMessage() );
+        }
+
+
+        CompletableFuture<?>[] futures = new CompletableFuture[7];
+
+        for(int i = 0; i < 7; i++) {
+                        // A. supplyAsync: Acquire the connection (This blocks if pool is empty)
+                        futures[i] = CompletableFuture.supplyAsync(() -> {
+                                    try {
+                                        logger.info("Thread {} is requesting a connection in future", Thread.currentThread().getName());
+                                        return pool.acquire();
+                                    } catch (InterruptedException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }, workers)
+                                .thenAccept(mc -> {
+                                    try {
+                                        logger.info("Thread {} acquired {}", Thread.currentThread().getName(), mc);
+                                        Thread.sleep(2000);
+                                        pool.release(mc);
+                                        logger.info("Thread {} released {}", Thread.currentThread().getName(), mc);
+                                    } catch (InterruptedException e) {
+                                        Thread.currentThread().interrupt();
+                                    }
+                                }).exceptionally(e -> { logger.info("this error was thrown {}", e.getMessage());
+                                return null;
+                                });
+
+        }
+        logger.info("Main thread waiting for tasks to complete...");
+        CompletableFuture.allOf(futures).join();
+
+        logger.info("All tasks completed. Shutting down.");
+        workers.shutdown();
+        pool.shutdown();
+
+        // file execution
         Scanner scanner = new Scanner(System.in);
         logger.info("write the special words separated by spaces:");
         String input = scanner.nextLine();
@@ -182,5 +251,7 @@ public class LogisticCompany {
         } catch(Exception e) {
             logger.error(e.getMessage());
         }
+
+
     }
 }
